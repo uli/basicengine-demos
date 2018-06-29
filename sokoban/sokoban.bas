@@ -5,15 +5,19 @@ DIM sc$(22)
 
 ' initial statements
 &menu:
+COLOR $ac, $d9
 CLS
-' XXX COLOR 10, 0
-LOCATE 30, 10
+LOCATE CSIZE(0)/2-7, 10
 PRINT "---SOKOBAN---"
-LOCATE 5, 12
-PRINT "Arrow keys move - <esc> quits - <R> retry."
-LOCATE 5, 13
-PRINT "To play, cover the '*' with 'O's."
-LOCATE 5, 14
+LOCATE CSIZE(0)/2-7, 12
+PRINT "Arrow keys move"
+LOCATE CSIZE(0)/2-5, 13
+PRINT "<Esc> quits"
+LOCATE CSIZE(0)/2-4, 14
+PRINT "<R> retry"
+LOCATE CSIZE(0)/2-13, 16
+PRINT "Cover the dots with boxes."
+LOCATE CSIZE(0)/2-14, 18
 PRINT "<L> load text file as level."
 
 LOAD PCX "sokoban.pcx" AS BG 0
@@ -190,7 +194,7 @@ IF found = 0 AND star = 0 THEN
     IF level > 5 THEN GOTO &menu
     GOTO &lev
 ENDIF
-'CLS
+
 s_x=(x-1)*16
 s_y=y*16
 CALL movplayer(s_x, s_y)
@@ -278,9 +282,8 @@ IF PAD(0)=UP THEN
         sc$(y - 1) = le$ + mi$ + ri$
     ENDIF
     y = y - 1
-ENDIF
 ' down
-IF PAD(0)=DOWN THEN
+ELSE IF PAD(0)=DOWN THEN
     'collision detection
     dest$ = MID$(sc$(y + 1), x - 1, 1)
     IF MID$(sc$(y - 2), x - 1, 1) = "O" THEN star = 0
@@ -338,9 +341,8 @@ IF PAD(0)=DOWN THEN
         sc$(y + 1) = le$ + mi$ + ri$
     ENDIF
     y = y + 1
-ENDIF
 ' left
-IF PAD(0)=LEFT THEN
+ELSE IF PAD(0)=LEFT THEN
     'collision detection
     dest$ = MID$(sc$(y), x - 2, 1)
     IF MID$(sc$(y), x + 1, 1) = "O" THEN star = 0
@@ -388,9 +390,8 @@ IF PAD(0)=LEFT THEN
         sc$(y) = le$ + mi$ + ri$
     ENDIF
     x = x - 1
-ENDIF
 ' right
-IF PAD(0)=RIGHT THEN
+ELSE IF PAD(0)=RIGHT THEN
     'collision detection
     dest$ = MID$(sc$(y), x, 1)
     IF MID$(sc$(y), x - 3, 1) = "O" THEN star = 0
