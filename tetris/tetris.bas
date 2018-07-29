@@ -1,28 +1,28 @@
 5 SCREEN 4:PALETTE 1:FONT 2:BORDER 6,60
 10 white=RGB (255,255,255):black=RGB (0,0,0):lblue=RGB (32,0,192):gray=RGB (128,128,128)
 15 gover=0:RESTORE 
-20 CLS:COLOR white:PRINT " BASIC TETRIS      ";
-30 PRINT "     2014     ";:PRINT "          ";:PRINT " ";:COLOR lblue:PRINT "SCORE";:COLOR white:PRINT " ";
-40 PRINT " DAVID MURRAY ";:PRINT "          ";:PRINT "            ";
-50 PRINT "              ";:PRINT "          ";:PRINT "     ";
-60 PRINT "              ";:PRINT "          ";:PRINT ""
-70 PRINT "              ";:PRINT "          ";:PRINT "  "
-80 PRINT "              ";:PRINT "          ";:PRINT "";:COLOR lblue:PRINT "NEXT";:COLOR white:PRINT ""
-90 PRINT "              ";:PRINT "          ";:PRINT "  ";:PRINT "    ";:PRINT ""
-100 PRINT "       ";:PRINT "          ";:PRINT "  ";:PRINT "    ";:PRINT ""
-110 PRINT "     ";:COLOR lblue:PRINT "LEVEL";:COLOR white:PRINT "";:PRINT "          ";:PRINT "  ";:PRINT "    ";:PRINT ""
-120 PRINT "            ";:PRINT "          ";:PRINT "  ";:PRINT "    ";:PRINT ""
-130 PRINT "       ";:PRINT "          ";:PRINT "  "
-140 PRINT " ";:COLOR gray:PRINT "";:COLOR white:PRINT "            ";:PRINT "          ";:PRINT ""
-150 PRINT " ";:CALL rvgon:PRINT "Z";:CALL rvgoff:PRINT " ROTATE";:COLOR white:PRINT "     ";:PRINT "          ";:PRINT ""
-160 PRINT " ";:COLOR gray:PRINT "";:COLOR white:PRINT "            ";:PRINT "          ";:PRINT ""
-170 PRINT " ";:CALL rvgon:PRINT ",";:CALL rvgoff:PRINT " LEFT";:COLOR white:PRINT "       ";:PRINT "          ";:PRINT ""
-180 PRINT " ";:COLOR gray:PRINT "";:COLOR white:PRINT "            ";:PRINT "          ";:PRINT ""
-190 PRINT " ";:CALL rvgon:PRINT ".";:CALL rvgoff:PRINT " DROP";:COLOR white:PRINT "       ";:PRINT "          ";:PRINT ""
-200 PRINT " ";:COLOR gray:PRINT "";:COLOR white:PRINT "            ";:PRINT "          ";:PRINT ""
-210 PRINT " ";:CALL rvgon:PRINT "/";:CALL rvgoff:PRINT " RIGHT";:COLOR white:PRINT "      ";:PRINT "          ";:PRINT ""
-220 PRINT "              ";:PRINT "          ";:PRINT ""
-230 PRINT "              "
+20 COLOR white,black:CLS:PRINT " BASIC TETRIS      ";
+30 PRINT "     2014                \f46SCORE\f0f ";
+40 PRINT " DAVID MURRAY                       ";
+50 PRINT "                             \x08";
+60 PRINT "                        "
+70 PRINT "                          "
+80 PRINT "                        \f46NEXT\f0f"
+90 PRINT "                              "
+100 PRINT "                       "
+110 PRINT "     \f46LEVEL\f0f                "
+120 PRINT "                            "
+130 PRINT "     \x08              \x08"
+140 PRINT " \f08\f0f                      "
+150 PRINT " \f08\RZ\N ROTATE\f0f               "
+160 PRINT " \f08\f0f                      "
+170 PRINT " \f08\R,\N LEFT\f0f                 "
+180 PRINT " \f08\f0f                      "
+190 PRINT " \f08\R.\N DROP\f0f                 "
+200 PRINT " \f08\f0f                      "
+210 PRINT " \f08\R/\N RIGHT\f0f                "
+220 PRINT "                        "
+230 PRINT "              \x08"
 240 PRINT "                          "
 250 PRINT "                          ":LOCATE 0,0
 255 CALL initcols
