@@ -162,7 +162,7 @@ BG 0 TILES 40,22 SIZE 16,16 WINDOW 0,0,PSIZE(0),PSIZE(1) ON
 FOR i=0 TO 39:FOR j=0 TO 21:PLOT 0,i,j,3:NEXT:NEXT
 
 tmap_from$ = "8* OX."
-DIM tmap_to(6) = 0,2,1,4,1,3
+DIM tmap_to(6)=[0,2,1,4,1,3]
 FOR i=0 TO LEN(tmap_from$)
   PLOT 0 MAP tmap_from$[i] TO tmap_to(i)
 NEXT
