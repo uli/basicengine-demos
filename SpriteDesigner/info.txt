@@ -1,0 +1,47 @@
+This is a Sprite Designer I am writing for the BASIC Engine hobby computer
+https://basicengine.org/
+It allows one to create 32x32 "sprites" saved both in the .pcx image format or 
+as DATA statements with contain the color code of each pixel meant to be READ
+as a loop and PSET into a 32x32 area of the screen ideally to be acted upon
+by blit techniques.  While the .pcx file can be acted upon as a sprite or 
+background as a "bitmap".
+
+You must update your BASIC Engine with the encluded firmware "unnoficialver395.bin"
+before Sprite Designer will work.  This firmware's updates should be incorporated into the next
+official firmware update at https://github.com/uli/basicengine-firmware
+
+The main program starts with a short instruction screen.
+Controls:
+  Arrow Keys/PSX controller
+  z=plot pixel
+  x=del pixel
+  s=save
+  a=load
+  p=erase and start over
+  d=save "sprite" as data statements
+  
+  Palette picker:
+  Base Color Controls:            Sub Color Controls:
+    7=up                            9=up
+    1=down                          3=down
+    4=choose color                  6=choose color
+    
+The save and load commands automatically append either .pcx or .spr accordingly.    
+  
+spriteloader.bas   Is intended as an example routine to plot the "sprite" saved
+as data statements onto the screen.
+This workflow is as follows:
+  1. create sprite and save it with 'd' as data statements file ending in .spr
+  2. LOAD "spriteloader.bas"
+  3. MERGE "your-sprite-name.spr"
+  4. RUN
+  
+Since the DATA statements file starts with line number 5000 it will certainly merge
+without problems with just about any base program.
+
+Please enjoy and give me feedback and idea.
+Thank you,
+Kevin Anderson
+projektprodukt@yahoo.com
+
+    
