@@ -100,7 +100,7 @@
 728 DATA -41,0,39,80:REM z
 810 FOR y=1 TO 7:FOR x=1 TO 4:FOR z=1 TO 4
 820       READ tetrorot(y,x,z):NEXT z:NEXT x:NEXT y
-900 nxtpiece=4:CALL updatelevel:CALL updatescore:CALLnewpiece:GOTO 5000
+900 nxtpiece=4:CALL updatelevel:CALL updatescore:CALL newpiece:GOTO 5000
 999 :
 1000 PROC drawnextpiece
 1005 COLOR black
@@ -146,9 +146,9 @@
 5270 q=q+40:w=w+40:e=e+40:r=r+40
 5280 @b=(FN getfield(q)<>0) OR (FN getfield(w)<>0) OR (FN getfield(e)<>0) OR (FN getfield(r)<>0)
 5290 IF @b=0 THEN CALL drawtetrimino:RETURN 
-5310 q=q-40:w=w-40:e=e-40:r=r-40:CALL drawtetrimino:CALL scanthefield:CALLnewpiece:RETURN 
+5310 q=q-40:w=w-40:e=e-40:r=r-40:CALL drawtetrimino:CALL scanthefield:CALL newpiece:RETURN 
 5499 :
-5500 PROCnewpiece
+5500 PROC newpiece
 5510 piece=nxtpiece:c=(piece+1)<<4 OR 8:nxtpiece=INT(RND(1)*7)+1:CALL drawnextpiece:score=score+5:CALL updatescore
 5520 CALL definetetrimino:q=q+4:w=w+4:e=e+4:r=r+4:rot=1
 5523 @bl=FN blocked
