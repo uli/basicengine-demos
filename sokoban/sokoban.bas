@@ -202,7 +202,7 @@ CALL movplayer(s_x, s_y)
 IF re_draw_from < 1 THEN re_draw_from=1
 IF re_draw_to > 22 THEN re_draw_to=22
 FOR g = re_draw_from TO re_draw_to
-    PLOT0,0,g,sc$(g)
+    PLOT 0,0,g,sc$(g)
     gg=LEN(sc$(g))
     WHILE gg<40
         PLOT 0,gg,g,3
