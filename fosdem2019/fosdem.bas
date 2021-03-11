@@ -42,7 +42,6 @@ endif
 
 do
   gosub slide*1000
-  slide=slide+ret(0)+2
 loop
 
 proc nav
@@ -109,7 +108,7 @@ proc bulp(t$)
   return
 
 proc subhdr(t$)
-  font2:print chi$;@t$;cdef$:font0:print
+  font 2:print chi$;@t$;cdef$:font 0:print
   return
 
 proc subhdrp(t$)
@@ -309,13 +308,13 @@ return
 
 6000 call title("Origins of the BASIC Engine")
 
-font2:print chi$;"I wanted a computer that";cdef$:font0
+font 2:print chi$;"I wanted a computer that";cdef$:font 0
 print
 call bulp("connects to a TV and a keyboard")
 call bulp("can be programmed in BASIC and is self-hosted")
 call bulp("is colorful and noisy")
 call bulp("can be made at home for cheap without obsolete parts")
-font2:print chi$;"Why did I want that?";cdef$:font0
+font 2:print chi$;"Why did I want that?";cdef$:font 0
 print
 call bulp("https://basicengine.org/history.html")
 call subhdrp("Somebody must have done that already, right?")
@@ -472,7 +471,7 @@ call bulp("Watch the assembly video.")
 call bul("")
 y=pos(1)
 window 2,y-2,csize(0)-2,6
-list30-50
+list 30-50
 window off
 locate 0,y+2
 call nav
