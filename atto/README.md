@@ -1,3 +1,35 @@
+This is a port of Atto Emacs to "next-generation" BASIC Engine platforms (H3
+and SDL).
+
+It is a tech demo and not very well tested. Its primary purpose is to
+demonstrate the changes required to port a text-mode program with a
+moderate interface footprint to Engine BASIC.
+
+To compile the program, run atto.bas. (Make sure you have the required
+header files in the root directory in the sub-folder "include".)
+
+After compilation you can call the editor with `|atto` and the file(s) you
+want to edit as parameters.
+
+The required changes to the original code base were:
+
+* Disable everything that relies on external commands.
+* Replace functions missing in the Engine BASIC mcurses library with
+  existing alternatives. (attron() -> attrset())
+* Implement basic curses functions for which no alternatives exist.
+  (unctrl(), color handling)
+* Disable functions that are not required. (raw(), noraw(), setlocale()
+  etc.)
+* Translate EB keyboard scancodes to escape sequences and adjust the
+  built-in key map.
+* Replace stat() with functions from eb_file.
+
+Search the source code for ENGINEBASIC to see the individual changes.
+
+
+Original README:
+
+
 # Atto Emacs
 
 The smallest functional Emacs in less than 2000 lines of C.
