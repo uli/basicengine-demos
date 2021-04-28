@@ -73,7 +73,6 @@ int ttgetc(void)
 			c = CCHR('?');
 
 		m = eb_last_key_event();
-		fprintf(stderr, "lke %x\n", m);
 		if (m & KEY_EVENT_ALT)
 			c |= 0x80;//METABIT;
 	}
