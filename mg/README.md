@@ -1,3 +1,27 @@
+This is a port of text editor MG to "next-generation" BASIC Engine platforms
+(H3 and SDL).
+
+It is a tech demo and not very well tested. Its primary purpose is to
+demonstrate the changes required to port a text-mode program with a
+large interface footprint and many dependencies to Engine BASIC.
+
+To compile the program, run `mg.bas`. (Make sure you have the required
+header files in the root directory in the sub-folder "include".)
+
+After compilation you can call the editor with `|mg` and the file(s) you
+want to edit as parameters.
+
+The required changes to the original code were numerous and can be found by
+searching the source code for `ENGINEBASIC`.
+
+Several features that rely on external commands have been disabled, namely
+dired, cscope, ctags, diff and grep.
+
+
+
+Original README:
+
+
 mg
 ==
 This is a portable version of the Mg editor from OpenBSD.
