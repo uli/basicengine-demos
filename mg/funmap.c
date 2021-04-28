@@ -68,6 +68,7 @@ static struct funmap functnames[] = {
 	{cntmatchlines, "count-matches", 1},
 	{cntnonmatchlines, "count-non-matches", 1},
 #endif /* REGEX */
+#ifndef ENGINEBASIC
 	{cscreatelist, "cscope-create-list-of-files-to-index", 1},
 	{csfuncalled, "cscope-find-called-functions", 1},
 	{csegrep, "cscope-find-egrep-pattern", 1},
@@ -81,6 +82,7 @@ static struct funmap functnames[] = {
 	{csnextmatch, "cscope-next-symbol", 0},
 	{csprevfile, "cscope-prev-file", 0},
 	{csprevmatch, "cscope-prev-symbol", 0},
+#endif
 	{redefine_key, "define-key", 3},
 	{backdel, "delete-backward-char", 0},
 	{deblank, "delete-blank-lines", 0},
@@ -96,7 +98,9 @@ static struct funmap functnames[] = {
 	{delwind, "delete-window", 0},
 	{wallchart, "describe-bindings", 0},
 	{desckey, "describe-key-briefly", 1},
+#ifndef ENGINEBASIC
 	{diffbuffer, "diff-buffer-with-file", 0},
+#endif
 	{digit_argument, "digit-argument", 1},
 	{lowerregion, "downcase-region", 0},
 	{lowerword, "downcase-word", 0},
@@ -115,13 +119,17 @@ static struct funmap functnames[] = {
 	{filevisit, "find-file", 1},
 	{poptofile, "find-file-other-window", 1},
 	{filevisitro, "find-file-read-only", 1},
+#ifndef ENGINEBASIC
 	{findtag, "find-tag", 1},
+#endif
 	{forwchar, "forward-char", 0},
 	{gotoeop, "forward-paragraph", 0},
 	{forwword, "forward-word", 0},
 	{bindtokey, "global-set-key", 2},
 	{unbindtokey, "global-unset-key", 1},
+#ifndef ENGINEBASIC
 	{globalwdtoggle, "global-wd-mode", 0},
+#endif
 	{gotoline, "goto-line", 1},
 	{help_help, "help-help", 0},
 	{indent, "indent-current-line", 0},
@@ -161,11 +169,15 @@ static struct funmap functnames[] = {
 	{openline, "open-line", 0},
 	{nextwind, "other-window", 0},
 	{overwrite_mode, "overwrite-mode", 0},
+#ifndef ENGINEBASIC
 	{poptag, "pop-tag-mark", 0},
+#endif
 	{prefixregion, "prefix-region", 0},
 	{backline, "previous-line", 0},
 	{prevwind, "previous-window", 0},
+#ifndef ENGINEBASIC
 	{spawncli, "push-shell", 0},
+#endif
 	{showcwdir, "pwd", 0},
 	{queryrepl, "query-replace", 1},
 #ifdef REGEX
@@ -205,15 +217,19 @@ static struct funmap functnames[] = {
 	{setfillcol, "set-fill-column", 1},
 	{setmark, "set-mark-command", 0},
 	{setprefix, "set-prefix-string", 1},
+#ifndef ENGINEBASIC
 	{shellcommand, "shell-command", 1},
 	{piperegion, "shell-command-on-region", 0},
+#endif
 	{shrinkwind, "shrink-window", 0},
 #ifdef NOTAB
 	{space_to_tabstop, "space-to-tabstop", 0},
 #endif /* NOTAB */
 	{splitwind, "split-window-vertically", 0},
 	{definemacro, "start-kbd-macro", 0},
+#ifndef ENGINEBASIC
 	{spawncli, "suspend-emacs", 0},
+#endif
 	{usebuffer, "switch-to-buffer", 1},
 	{poptobuffer, "switch-to-buffer-other-window", 1},
 #ifndef NOEXTENSIONS
@@ -233,7 +249,9 @@ static struct funmap functnames[] = {
 	{upperregion, "upcase-region", 0},
 	{upperword, "upcase-word", 0},
 	{togglevisiblebell, "visible-bell", 0},
+#ifndef ENGINEBASIC
 	{tagsvisit, "visit-tags-table", 0},
+#endif
 	{showcpos, "what-cursor-position", 0},
 	{filewrite, "write-file", 1},
 	{yank, "yank", 0},

@@ -13,16 +13,17 @@
  * them from scratch.
  */
 
-#ifdef REGEX
 #include <sys/queue.h>
 #include <sys/types.h>
-#include <regex.h>
 #include <signal.h>
 #include <stdio.h>
 #include <string.h>
 
 #include "def.h"
 #include "macro.h"
+
+#ifdef REGEX
+#include <regex.h>
 
 #define SRCH_BEGIN	(0)		/* search sub-codes		    */
 #define SRCH_FORW	(-1)

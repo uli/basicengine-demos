@@ -44,7 +44,11 @@ static PF cmode_brace[] = {
 };
 
 static PF cmode_cCP[] = {
+#ifdef ENGINEBASIC
+	rescan,			/* C-c P */
+#else
 	compile,		/* C-c P */
+#endif
 };
 
 

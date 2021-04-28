@@ -200,7 +200,9 @@ int
 readin(char *fname)
 {
 	struct mgwin	*wp;
+#ifndef ENGINEBASIC
 	struct stat	 statbuf;
+#endif
 	int	 status, i, ro = FALSE;
 	PF	*ael;
 	char	 dp[NFILEN];
@@ -245,7 +247,11 @@ readin(char *fname)
 	 */
 	if (fisdir(fname) == TRUE) {
 		ro = TRUE;
+#ifdef ENGINEBASIC
+	} else if (0) {
+#else
 	} else if ((access(fname, W_OK) == -1)) {
+#endif
 		if (errno != ENOENT) {
 			ro = TRUE;
 		} else if (errno == ENOENT) {
@@ -253,14 +259,21 @@ readin(char *fname)
 			(void)strlcat(dp, "/", sizeof(dp));
 
 			/* Missing directory; keep buffer rw, like emacs */
+#ifdef ENGINEBASIC
+			if (!eb_file_exists(dp)) {
+#else
 			if (stat(dp, &statbuf) == -1 && errno == ENOENT) {
+#endif
 				if (eyorn("Missing directory, create") == TRUE)
 					(void)do_makedir(dp);
-			} else if (access(dp, W_OK) == -1 && errno == EACCES) {
+			}
+#ifndef ENGINEBASIC
+			else if (access(dp, W_OK) == -1 && errno == EACCES) {
 				ewprintf("File not found and directory"
 				    " write-protected");
 				ro = TRUE;
 			}
+#endif
 		}
 	}
 	if (ro == TRUE)
@@ -342,12 +355,16 @@ insertfile(char *fname, char *newname, int replacebuf)
 		goto out;
 	} else if (s == FIODIR) {
 		/* file was a directory */
-		if (replacebuf == FALSE) {
+#ifndef ENGINEBASIC
+		if (replacebuf == FALSE)
+#endif
+		{
 			dobeep();
 			ewprintf("Cannot insert: file is a directory, %s",
 			    fname);
 			goto cleanup;
 		}
+#ifndef ENGINEBASIC
 		killbuffer(bp);
 		bp = dired_(fname);
 		undo_enable(FFRAND, x);
@@ -355,6 +372,7 @@ insertfile(char *fname, char *newname, int replacebuf)
 			return (FALSE);
 		curbp = bp;
 		return (showbuffer(bp, curwp, WFFULL | WFMODE));
+#endif
 	} else {
 		(void)xdirname(bp->b_cwd, fname, sizeof(bp->b_cwd));
 		(void)strlcat(bp->b_cwd, "/", sizeof(bp->b_cwd));
@@ -510,7 +528,9 @@ cleanup:
 int
 filewrite(int f, int n)
 {
+#ifndef ENGINEBASIC
 	struct stat     statbuf;
+#endif
 	int	 s;
 	char	 fname[NFILEN], bn[NBUFN], tmp[NFILEN + 25];
 	char	*adjfname, *bufp;
@@ -529,8 +549,13 @@ filewrite(int f, int n)
 		return (FALSE);
 
         /* Check if file exists; write checks done later */
+#ifdef ENGINEBASIC
+        if (eb_file_exists(adjfname)) {
+		if (eb_is_directory(adjfname)) {
+#else
         if (stat(adjfname, &statbuf) == 0) {
 		if (S_ISDIR(statbuf.st_mode)) {
+#endif
 			dobeep();
 			ewprintf("%s is a directory", adjfname);
 			return (FALSE);
@@ -668,12 +693,18 @@ makebkfile(int f, int n)
 int
 writeout(FILE ** ffp, struct buffer *bp, char *fn)
 {
+#ifndef ENGINEBASIC
 	struct stat	 statbuf;
+#endif
 	struct line	*lpend;
 	int		 s, eobnl;
 	char		 dp[NFILEN];
 
+#ifdef ENGINEBASIC
+	if (!eb_file_exists(fn)) {
+#else
 	if (stat(fn, &statbuf) == -1 && errno == ENOENT) {
+#endif
 		errno = 0;
 		(void)xdirname(dp, fn, sizeof(dp));
 		(void)strlcat(dp, "/", sizeof(dp));
@@ -754,6 +785,9 @@ xdirname(char *dp, const char *path, size_t dplen)
  * Address portability issue by copying argument
  * before using: some implementations modify the input string.
  */
+#ifdef ENGINEBASIC
+char *basename(char *path);
+#endif
 size_t
 xbasename(char *bp, const char *path, size_t bplen)
 {
@@ -771,7 +805,9 @@ do_dired(char *adjf)
 {
 	struct buffer	*bp;
 
+#ifndef ENGINEBASIC
 	if ((bp = dired_(adjf)) == FALSE)
+#endif
 		return (FALSE);
 	curbp = bp;
 	return (showbuffer(bp, curwp, WFFULL | WFMODE));

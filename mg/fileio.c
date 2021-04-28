@@ -60,6 +60,7 @@ ffropen(FILE ** ffp, const char *fn, struct buffer *bp)
 void
 ffstat(FILE *ffp, struct buffer *bp)
 {
+#ifndef ENGINEBASIC
 	struct stat	sb;
 
 	if (bp && fstat(fileno(ffp), &sb) == 0) {
@@ -71,6 +72,7 @@ ffstat(FILE *ffp, struct buffer *bp)
 		/* Clear the ignore flag */
 		bp->b_flag &= ~(BFIGNDIRTY | BFDIRTY);
 	}
+#endif
 }
 
 /*
@@ -104,6 +106,9 @@ ffwopen(FILE ** ffp, const char *fn, struct buffer *bp)
 	if (bp && bp->b_fi.fi_mode)
 		fmode = bp->b_fi.fi_mode & 07777;
 
+#ifdef ENGINEBASIC
+	if ((*ffp = fopen(fn, "w")) == NULL) {
+#else
 	fd = open(fn, O_RDWR | O_CREAT | O_TRUNC, fmode);
 	if (fd == -1) {
 		ffp = NULL;
@@ -113,9 +118,14 @@ ffwopen(FILE ** ffp, const char *fn, struct buffer *bp)
 	}
 
 	if ((*ffp = fdopen(fd, "w")) == NULL) {
+#endif
 		dobeep();
 		ewprintf("Cannot open file for writing : %s", strerror(errno));
+#ifdef ENGINEBASIC
+		fclose(*ffp);
+#else
 		close(fd);
+#endif
 		return (FIOERR);
 	}
 
@@ -126,10 +136,12 @@ ffwopen(FILE ** ffp, const char *fn, struct buffer *bp)
 	 * probably OK.  If we don't have info, no need to get it, since any
 	 * future writes will do the same thing.
 	 */
+#ifndef ENGINEBASIC
 	if (bp && bp->b_fi.fi_mode) {
 		fchmod(fd, bp->b_fi.fi_mode & 07777);
 		fchown(fd, bp->b_fi.fi_uid, bp->b_fi.fi_gid);
 	}
+#endif
 	return (FIOSUC);
 }
 
@@ -163,11 +175,19 @@ ffputbuf(FILE *ffp, struct buffer *bp, int eobnl)
 			return (FIOERR);
 		}
 		if (lforw(lp) != lpend)		/* no implied \n on last line */
+#ifdef ENGINEBASIC
+			fputc('\n', ffp);
+#else
 			putc('\n', ffp);
+#endif
 	}
 	if (eobnl) {
 		lnewline_at(lback(lpend), llength(lback(lpend)));
+#ifdef ENGINEBASIC
+		fputc('\n', ffp);
+#else
 		putc('\n', ffp);
+#endif
 	}
 	return (FIOSUC);
 }
@@ -185,7 +205,11 @@ ffgetline(FILE *ffp, char *buf, int nbuf, int *nbytes)
 	int	c, i;
 
 	i = 0;
+#ifdef ENGINEBASIC
+	while ((c = fgetc(ffp)) != EOF && c != '\n') {
+#else
 	while ((c = getc(ffp)) != EOF && c != '\n') {
+#endif
 		buf[i++] = c;
 		if (i >= nbuf)
 			return (FIOLONG);
@@ -210,18 +234,27 @@ ffgetline(FILE *ffp, char *buf, int nbuf, int *nbytes)
 int
 fbackupfile(const char *fn)
 {
+#ifndef ENGINEBASIC
 	struct stat	 sb;
+#endif
 	struct timespec	 new_times[2];
-	int		 from, to, serrno;
+#ifdef ENGINEBASIC
+	FILE		*from;
+#else
+	int		 from;
+#endif
+	int		 to, serrno;
 	ssize_t		 nread;
 	char		 buf[BUFSIZ];
 	char		*nname, *tname, *bkpth;
 
+#ifndef ENGINEBASIC
 	if (stat(fn, &sb) == -1) {
 		dobeep();
 		ewprintf("Can't stat %s : %s", fn, strerror(errno));
 		return (FALSE);
 	}
+#endif
 
 	if ((bkpth = bkuplocation(fn)) == NULL)
 		return (FALSE);
@@ -241,7 +274,11 @@ fbackupfile(const char *fn)
 	}
 	free(bkpth);
 
+#ifdef ENGINEBASIC
+	if ((from = fopen(fn, "r")) == NULL) {
+#else
 	if ((from = open(fn, O_RDONLY)) == -1) {
+#endif
 		free(nname);
 		free(tname);
 		return (FALSE);
@@ -249,27 +286,41 @@ fbackupfile(const char *fn)
 	to = mkstemp(tname);
 	if (to == -1) {
 		serrno = errno;
+#ifdef ENGINEBASIC
+		fclose(from);
+#else
 		close(from);
+#endif
 		free(nname);
 		free(tname);
 		errno = serrno;
 		return (FALSE);
 	}
+#ifdef ENGINEBASIC
+	while ((nread = fread(buf, 1, sizeof(buf), from)) > 0) {
+#else
 	while ((nread = read(from, buf, sizeof(buf))) > 0) {
+#endif
 		if (write(to, buf, (size_t)nread) != nread) {
 			nread = -1;
 			break;
 		}
 	}
 	serrno = errno;
+#ifndef ENGINEBASIC
 	(void) fchmod(to, (sb.st_mode & 0777));
 
 	/* copy the mtime to the backupfile */
 	new_times[0] = sb.st_atim;
 	new_times[1] = sb.st_mtim;
 	futimens(to, new_times);
+#endif
 
+#ifdef ENGINEBASIC
+	fclose(from);
+#else
 	close(from);
+#endif
 	close(to);
 	if (nread == -1) {
 		if (unlink(tname) == -1)
@@ -316,7 +367,9 @@ adjustname(const char *fn, int slashslash)
 	if ((path = expandtilde(fn)) == NULL)
 		return (NULL);
 
+#ifndef ENGINEBASIC
 	if (realpath(path, fnb) == NULL)
+#endif
 		(void)strlcpy(fnb, path, sizeof(fnb));
 
 	free(path);
@@ -375,49 +428,83 @@ nohome:
 int
 copy(char *frname, char *toname)
 {
+#ifdef ENGINEBASIC
+	FILE	*ifd, *ofd;
+#else
 	int	ifd, ofd;
+#endif
 	char	buf[BUFSIZ];
 	mode_t	fmode = DEFFILEMODE;	/* XXX?? */
 	struct	stat orig;
 	ssize_t	sr;
 
+#ifdef ENGINEBASIC
+	if ((ifd = fopen(frname, "r")) == NULL)
+#else
 	if ((ifd = open(frname, O_RDONLY)) == -1)
+#endif
 		return (FALSE);
+#ifndef ENGINEBASIC
 	if (fstat(ifd, &orig) == -1) {
 		dobeep();
 		ewprintf("fstat: %s", strerror(errno));
 		close(ifd);
 		return (FALSE);
 	}
+#endif
 
+#ifdef ENGINEBASIC
+	if ((ofd = fopen(toname, "w")) == NULL) {
+		fclose(ifd);
+#else
 	if ((ofd = open(toname, O_WRONLY|O_CREAT|O_TRUNC, fmode)) == -1) {
 		close(ifd);
+#endif
 		return (FALSE);
 	}
+#ifdef ENGINEBASIC
+	while ((sr = fread(buf, 1, sizeof(buf), ifd)) > 0) {
+		if (fwrite(buf, 1, (size_t)sr, ofd) != sr) {
+#else
 	while ((sr = read(ifd, buf, sizeof(buf))) > 0) {
 		if (write(ofd, buf, (size_t)sr) != sr) {
+#endif
 			ewprintf("write error : %s", strerror(errno));
 			break;
 		}
 	}
+#ifndef ENGINEBASIC
 	if (fchmod(ofd, orig.st_mode) == -1)
 		ewprintf("Cannot set original mode : %s", strerror(errno));
+#endif
 
 	if (sr == -1) {
 		ewprintf("Read error : %s", strerror(errno));
+#ifdef ENGINEBASIC
+		fclose(ifd);
+		fclose(ofd);
+#else
 		close(ifd);
 		close(ofd);
+#endif
 		return (FALSE);
 	}
 	/*
 	 * It is "normal" for this to fail since we can't guarantee that
 	 * we will be running as root.
 	 */
+#ifndef ENGINEBASIC
 	if (fchown(ofd, orig.st_uid, orig.st_gid) && errno != EPERM)
 		ewprintf("Cannot set owner : %s", strerror(errno));
+#endif
 
+#ifdef ENGINEBASIC
+	(void) fclose(ifd);
+	(void) fclose(ofd);
+#else
 	(void) close(ifd);
 	(void) close(ofd);
+#endif
 
 	return (TRUE);
 }
@@ -521,6 +608,7 @@ make_file_list(char *buf)
 		isdir = 0;
 		if (dent->d_type == DT_DIR) {
 			isdir = 1;
+#ifndef ENGINEBASIC
 		} else if (dent->d_type == DT_LNK ||
 			    dent->d_type == DT_UNKNOWN) {
 			struct stat	statbuf;
@@ -529,6 +617,7 @@ make_file_list(char *buf)
 				continue;
 			if (S_ISDIR(statbuf.st_mode))
 				isdir = 1;
+#endif
 		}
 
 		if ((current = malloc(sizeof(struct list))) == NULL) {
@@ -560,11 +649,19 @@ fisdir(const char *fname)
 {
 	struct stat	statbuf;
 
+#ifdef ENGINEBASIC
+	if (!eb_file_exists(fname))
+		return (ABORT);
+
+	if (eb_is_directory(fname))
+		return (TRUE);
+#else
 	if (stat(fname, &statbuf) != 0)
 		return (ABORT);
 
 	if (S_ISDIR(statbuf.st_mode))
 		return (TRUE);
+#endif
 
 	return (FALSE);
 }
@@ -579,6 +676,7 @@ fchecktime(struct buffer *bp)
 {
 	struct stat sb;
 
+#ifndef ENGINEBASIC
 	if (stat(bp->b_fname, &sb) == -1)
 		return (TRUE);
 
@@ -586,6 +684,7 @@ fchecktime(struct buffer *bp)
 	    bp->b_fi.fi_mtime.tv_nsec != sb.st_mtimespec.tv_nsec)
 		return (FALSE);
 
+#endif
 	return (TRUE);
 
 }
@@ -596,11 +695,18 @@ fchecktime(struct buffer *bp)
 static char *
 bkuplocation(const char *fn)
 {
+#ifndef ENGINEBASIC
 	struct stat sb;
+#endif
 	char *ret;
 
+#ifdef ENGINEBASIC
+	if (bkupdir != NULL && eb_is_directory(bkupdir) &&
+	    !bkupleavetmp(fn)) {
+#else
 	if (bkupdir != NULL && (stat(bkupdir, &sb) == 0) &&
 	    S_ISDIR(sb.st_mode) && !bkupleavetmp(fn)) {
+#endif
 		char fname[NFILEN];
 		const char *c;
 		int i = 0, len;
@@ -698,15 +804,24 @@ char *
 expandtilde(const char *fn)
 {
 	struct passwd	*pw;
+#ifndef ENGINEBASIC
 	struct stat	 statbuf;
+#endif
 	const char	*cp;
+#ifdef ENGINEBASIC
+#define LOGIN_NAME_MAX 42
+#endif
 	char		 user[LOGIN_NAME_MAX], path[NFILEN];
 	char		*ret;
 	size_t		 ulen, plen;
 
 	path[0] = '\0';
 
+#ifdef ENGINEBASIC
+	if (fn[0] != '~' || eb_file_exists(fn)) {
+#else
 	if (fn[0] != '~' || stat(fn, &statbuf) == 0) {
+#endif
 		if ((ret = strndup(fn, NFILEN)) == NULL)
 			return (NULL);
 		return(ret);
@@ -720,6 +835,7 @@ expandtilde(const char *fn)
 			return (NULL);
 		return(ret);
 	}
+#ifndef ENGINEBASIC
 	if (ulen == 0) /* ~/ or ~ */
 		pw = getpwuid(geteuid());
 	else { /* ~user/ or ~user */
@@ -740,6 +856,7 @@ expandtilde(const char *fn)
 		if (*fn == '/')
 			fn++;
 	}
+#endif
 	if (strlcat(path, fn, sizeof(path)) >= sizeof(path)) {
 		dobeep();
 		ewprintf("Path too long");

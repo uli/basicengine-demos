@@ -15,7 +15,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#ifndef ENGINEBASIC
 #include <term.h>
+#endif
 
 #include "def.h"
 #include "funmap.h"
@@ -248,6 +250,7 @@ veread(const char *fp, char *buf, size_t nbuf, int flag, va_list ap)
 
 		if (esc > 0) { /* ESC sequence started */
 			match = 0;
+#ifndef ENGINEBASIC
 			if (ml == esc && key_left[ml] && c == key_left[ml]) {
 				match++;
 				if (key_left[++ml] == '\0') {
@@ -262,6 +265,7 @@ veread(const char *fp, char *buf, size_t nbuf, int flag, va_list ap)
 					esc = 0;
 				}
 			}
+#endif
 			if (match == 0) {
 				esc = 0;
 				continue;

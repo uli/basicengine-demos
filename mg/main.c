@@ -7,9 +7,13 @@
  */
 
 #include <sys/queue.h>
+#ifndef ENGINEBASIC
 #include <err.h>
+#endif
 #include <limits.h>
+#ifndef ENGINEBASIC
 #include <locale.h>
+#endif
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -40,12 +44,24 @@ struct mgwin	*wheadp;			/* MGWIN listhead	*/
 char		 pat[NPAT];			/* pattern		*/
 
 static void	 edinit(struct buffer *);
+#ifdef ENGINEBASIC
+static __dead2 void usage(void);
+#else
 static __dead void usage(void);
+#endif
 
+#ifdef ENGINEBASIC
+#define __progname "mg"
+#else
 extern char	*__progname;
+#endif
 extern void     closetags(void);
 
+#ifdef ENGINEBASIC
+static __dead2 void
+#else
 static __dead void
+#endif
 usage()
 {
 	fprintf(stderr, "usage: %s [-nR] [-f mode] [-u file] [+number] "
@@ -53,6 +69,10 @@ usage()
 	    __progname);
 	exit(1);
 }
+
+#ifdef ENGINEBASIC
+#define errx(ret, msg...) do { printf(msg); return (ret); } while (0)
+#endif
 
 int
 main(int argc, char **argv)
@@ -92,7 +112,9 @@ main(int argc, char **argv)
 	argc -= optind;
 	argv += optind;
 
+#ifndef ENGINEBASIC
 	setlocale(LC_CTYPE, "");
+#endif
 
 	maps_init();		/* Keymaps and modes.		*/
 	funmap_init();		/* Functions.			*/
@@ -111,8 +133,10 @@ main(int argc, char **argv)
 		extern void cmode_init(void);
 		extern void dired_init(void);
 
+#ifndef ENGINEBASIC
 		dired_init();
 		grep_init();
+#endif
 		cmode_init();
 	}
 
@@ -270,7 +294,9 @@ quit(int f, int n)
 	if (s == FALSE
 	    || eyesno("Modified buffers exist; really exit") == TRUE) {
 		vttidy();
+#ifndef ENGINEBASIC
 		closetags();
+#endif
 		exit(0);
 	}
 	return (TRUE);

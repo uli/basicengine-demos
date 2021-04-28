@@ -46,6 +46,26 @@ struct KEYMAPE (2) helpmap = {
 };
 
 static PF cCsc[] = {
+#ifdef ENGINEBASIC
+	rescan,			/* c */
+	rescan,			/* d */
+	rescan,			/* e */
+	rescan,			/* f */
+	rescan,			/* g */
+	rescan,			/* h */
+	rescan,			/* i */
+	rescan,			/* j */
+	rescan,			/* k */
+	rescan,			/* l */
+	rescan,			/* m */
+	rescan,			/* n */
+	rescan,			/* o */
+	rescan,			/* p */
+	rescan,			/* q */
+	rescan, 		/* r */
+	rescan,			/* s */
+	rescan,			/* t */
+#else
 	cscallerfuncs,		/* c */
 	csdefinition,		/* d */
 	csegrep,		/* e */
@@ -64,6 +84,7 @@ static PF cCsc[] = {
 	rescan, 		/* r */
 	cssymbol,		/* s */
 	csfindtext		/* t */
+#endif
 };
 
 static struct KEYMAPE (1) cCsmap = {
@@ -165,7 +186,11 @@ static PF cXeq[] = {
 static PF cXcar[] = {
 	enlargewind,		/* ^ */
 	rescan,			/* _ */
+#ifdef ENGINEBASIC
+	rescan,			/* ` */
+#else
 	next_error,		/* ` */
+#endif
 	rescan,			/* a */
 	usebuffer,		/* b */
 	rescan,			/* c */
@@ -225,7 +250,11 @@ static PF metacV[] = {
 
 static PF metaspex[] = {
 	justone,		/* space */
+#ifdef ENGINEBASIC
+	rescan			/* ! */
+#else
 	shellcommand		/* ! */
+#endif
 };
 
 static PF metapct[] = {
@@ -233,11 +262,19 @@ static PF metapct[] = {
 };
 
 static PF metami[] = {
+#ifdef ENGINEBASIC
+	rescan,                 /* * */
+#else
 	poptag,                 /* * */
+#endif
 	rescan,                 /* + */
 	rescan,                 /* , */
 	negative_argument,	/* - */
+#ifdef ENGINEBASIC
+	rescan,			/* . */
+#else
 	findtag,		/* . */
+#endif
 	rescan,			/* / */
 	digit_argument,		/* 0 */
 	digit_argument,		/* 1 */
@@ -290,7 +327,11 @@ static PF metal[] = {
 	rescan,			/* y */
 	rescan,			/* z */
 	gotobop,		/* { */
+#ifdef ENGINEBASIC
+	rescan,			/* | */
+#else
 	piperegion,		/* | */
+#endif
 	gotoeop			/* } */
 };
 
@@ -380,7 +421,11 @@ static PF fund_CJ[] = {
 	killregion,		/* ^W */
 	NULL,			/* ^X */
 	yank,			/* ^Y */
+#ifdef ENGINEBASIC
+	NULL,			/* ^Z */
+#else
 	spawncli		/* ^Z */
+#endif
 };
 
 static PF fund_esc[] = {

@@ -15,6 +15,10 @@
  */
 #include "config.h"
 
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
+#endif
+
 #include	"chrdef.h"
 
 typedef int	(*PF)(int, int);	/* generally useful type */
@@ -316,7 +320,9 @@ struct undo_rec {
 /*
  * Previously from ttydef.h
  */
+#ifndef ENGINEBASIC
 #define STANDOUT_GLITCH			/* possible standout glitch	*/
+#endif
 
 #define putpad(str, num)	tputs(str, num, ttputc)
 
@@ -342,7 +348,11 @@ void		 ttnowindow(void);
 void		 ttcolor(int);
 void		 ttresize(void);
 
+#ifdef ENGINEBASIC
+extern volatile int winch_flag;
+#else
 extern volatile sig_atomic_t winch_flag;
+#endif
 
 /* ttyio.c */
 void		 ttopen(void);
@@ -767,3 +777,13 @@ extern int		 rptcount;	/* successive invocation count */
  */
 extern int		 shownlprompt;
 int			 togglenewlineprompt(int, int);
+
+#ifdef ENGINEBASIC
+#include <eb_file.h>
+#define access(n, f) (eb_file_exists(n) ? 0 : (errno = -ENOENT, -1))
+
+#define TRACE fprintf(stderr, "%s line %d\n", __FUNCTION__, __LINE__);
+
+#define malloc(n) calloc(1, (n))
+#define realloc(p, n) (p ? realloc(p, n) : calloc(1, n))
+#endif

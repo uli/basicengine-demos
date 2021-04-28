@@ -31,6 +31,7 @@ static int			 ready;
 PF *
 find_autoexec(const char *fname)
 {
+#ifndef ENGINEBASIC
 	PF		*pfl, *npfl;
 	int		 have, used;
 	struct autoexec *ae;
@@ -58,6 +59,9 @@ find_autoexec(const char *fname)
 		pfl[used] = NULL;
 
 	return (pfl);
+#else
+	return NULL;
+#endif
 }
 
 int

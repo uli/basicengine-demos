@@ -115,7 +115,9 @@ ask_makedir(void)
 int
 do_makedir(char *path)
 {
+#ifndef ENGINEBASIC
 	struct stat	 sb;
+#endif
 	int		 finished, ishere;
 	mode_t		 dir_mode, f_mode, oumask;
 	char		*slash;
@@ -130,7 +132,11 @@ do_makedir(char *path)
 
 	slash = path;
 
+#ifdef ENGINEBASIC
+	oumask = 0222;
+#else
 	oumask = umask(0);
+#endif
 	f_mode = 0777 & ~oumask;
 	dir_mode = f_mode | S_IWUSR | S_IXUSR;
 
@@ -141,24 +147,38 @@ do_makedir(char *path)
 		finished = (*slash == '\0');
 		*slash = '\0';
 
+#ifdef ENGINEBASIC
+		ishere = eb_file_exists(path);
+#else
 		ishere = !stat(path, &sb);
+#endif
 		if (finished && ishere) {
 			dobeep();
 			ewprintf("Cannot create directory %s: file exists",
 			     path);
 			return(FALSE);
+#ifdef ENGINEBASIC
+		} else if (!finished && ishere && eb_is_directory(path)) {
+#else
 		} else if (!finished && ishere && S_ISDIR(sb.st_mode)) {
+#endif
 			*slash = '/';
 			continue;
 		}
 
 		if (mkdir(path, finished ? f_mode : dir_mode) == 0) {
+#ifndef ENGINEBASIC
 			if (f_mode > 0777 && chmod(path, f_mode) == -1) {
 				umask(oumask);
 				return (ABORT);
 			}
+#endif
 		} else {
+#ifdef ENGINEBASIC
+			if (!ishere || !eb_is_directory(path)) {
+#else
 			if (!ishere || !S_ISDIR(sb.st_mode)) {
+#endif
 				if (!ishere) {
 					dobeep();
 					ewprintf("Creating directory: "
@@ -166,7 +186,9 @@ do_makedir(char *path)
 				} else
 					eerase();
 
+#ifndef ENGINEBASIC
 				umask(oumask);
+#endif
 				return (FALSE);
 			}
 		}
@@ -178,6 +200,8 @@ do_makedir(char *path)
 	}
 
 	eerase();
+#ifndef ENGINEBASIC
 	umask(oumask);
+#endif
 	return (TRUE);
 }

@@ -17,7 +17,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#ifndef ENGINEBASIC
 #include <term.h>
+#endif
 
 #include "def.h"
 #include "kbd.h"
@@ -148,11 +150,18 @@ vtresize(int force, int newrow, int newcol)
 	rowchanged = (newrow != nrow);
 	colchanged = (newcol != ncol);
 
+#ifdef ENGINEBASIC
+#define CLEARALLOC(a, n) if ((a) == NULL) memset(tmp, 0, (n))
+#else
+#define CLEARALLOC(a, n) do { } while (0)
+#endif
+
 #define TRYREALLOC(a, n) do {					\
 		void *tmp;					\
 		if ((tmp = realloc((a), (n))) == NULL) {	\
 			panic("out of memory in display code");	\
 		}						\
+		CLEARALLOC(a, n);   				\
 		(a) = tmp;					\
 	} while (0)
 
@@ -161,6 +170,7 @@ vtresize(int force, int newrow, int newcol)
 		if ((tmp = reallocarray((a), (n), (m))) == NULL) {\
 			panic("out of memory in display code");	\
 		}						\
+		CLEARALLOC(a, (n)*(m));				\
 		(a) = tmp;					\
 	} while (0)
 
@@ -843,8 +853,10 @@ modeline(struct mgwin *wp, int modelinecolor)
 	/* XXX These should eventually move to a real mode */
 	if (macrodef == TRUE)
 		n += vtputs("-def");
+#ifndef ENGINEBASIC
 	if (globalwd == TRUE)
 		n += vtputs("-gwd");
+#endif
 	vtputc(')');
 	++n;
 

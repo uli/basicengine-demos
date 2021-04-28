@@ -6,6 +6,10 @@
  *		Buffer handling.
  */
 
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
+#endif
+
 #include <sys/queue.h>
 #include <errno.h>
 #include <libgen.h>
@@ -866,7 +870,11 @@ getbufcwd(char *path, size_t plen)
 	if (plen == 0)
 		return (FALSE);
 
+#ifdef ENGINEBASIC
+	if (curbp->b_cwd[0] != '\0') {
+#else
 	if (globalwd == FALSE && curbp->b_cwd[0] != '\0') {
+#endif
 		(void)strlcpy(path, curbp->b_cwd, plen);
 	} else {
 		if (getcwdir(cwd, sizeof(cwd)) == FALSE)
@@ -970,6 +978,7 @@ dorevert(void)
 	return (FALSE);
 }
 
+#ifndef ENGINEBASIC
 /*
  * Diff the current buffer to what is on disk.
  */
@@ -1043,6 +1052,7 @@ diffbuffer(int f, int n)
 	free(text);
 	return (ret);
 }
+#endif
 
 /*
  * Given a file name, either find the buffer it uses, or create a new
