@@ -83,6 +83,8 @@ int ttgetc(void)
 int ttputc(int ch)
 {
 	eb_putch(ch);
+	if (ch == '\\')
+		eb_putch(ch);
 	return ch;
 }
 
