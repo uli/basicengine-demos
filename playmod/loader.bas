@@ -1,0 +1,2 @@
+TCC "playmod.c"
+TCCLINK
