@@ -1,0 +1,12 @@
+#REQUIRE "famicom"
+INPUT "ROM file? ";rom$
+
+FAMIMOVE PSIZE(0)-256, 0
+FAMILOAD rom$
+
+DO 
+  f=FRAME()
+  FAMULATE
+  FAMINPUT PAD(0)
+  VSYNC f+1
+LOOP 
