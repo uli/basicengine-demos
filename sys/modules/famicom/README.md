@@ -7,7 +7,7 @@ start of a BASIC program.
 When loaded, the following additional BASIC commands/functions are
 available:
 
-- `FAMILOAD "<rom image>" initializes the emulator and loads a Famicom/NES
+- `FAMILOAD "<rom image>"` initializes the emulator and loads a Famicom/NES
   ROM file in iNES format
 - `FAMULATE` emulates one frame.
 - `FAMIEND` ends the emulator.
