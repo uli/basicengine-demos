@@ -7,17 +7,19 @@ BE_SYSDIR = ../../../../enginebasic/init_dir/sys
 ARM_CROSS_COMPILE = ~/x-tools/arm-unknown-eabihf/bin/arm-unknown-eabihf-
 X64_CROSS_COMPILE = 
 
-CFLAGS = -O3 -Wall -DENGINEBASIC -I$(BE_SYSDIR)/include -nostdlib -ffreestanding -DPIXEL_TYPE=uint32_t -DIPIXEL_TYPE=uint32_t -U __UINT32_TYPE__ -U__INT32_TYPE__ -D__UINT32_TYPE__="unsigned int" -D__INT32_TYPE__=int
+CFLAGS = -O3 -Wall -DENGINEBASIC -I$(BE_SYSDIR)/include -nostdlib -ffreestanding -DPIXEL_TYPE=uint32_t -DIPIXEL_TYPE=uint32_t -U __UINT32_TYPE__ -U__INT32_TYPE__ -D__UINT32_TYPE__="unsigned int" -D__INT32_TYPE__=int -D_GNU_SOURCE
 ARM_CFLAGS = $(CFLAGS) -mfpu=neon -mfloat-abi=hard -mcpu=cortex-a7
 X64_CFLAGS = $(CFLAGS)
 
-SRCS = lapi.cpp lauxlib.cpp lbaselib.cpp lcode.cpp lcorolib.cpp lctype.cpp \
-	ldblib.cpp ldebug.cpp ldo.cpp ldump.cpp lfunc.cpp lgc.cpp linit.cpp \
-	liolib.cpp llex.cpp lmathlib.cpp lmem.cpp loadlib.cpp lobject.cpp \
-	lopcodes.cpp loslib.cpp lparser.cpp lstate.cpp lstring.cpp lstrlib.cpp \
-	ltable.cpp ltablib.cpp ltests.cpp ltm.cpp lundump.cpp lutf8lib.cpp lvm.cpp \
-	lzio.cpp
-OBJS = $(SRCS:.cpp=.o)
+SRCS = lapi.c lauxlib.c lbaselib.c lcode.c lcorolib.c lctype.c \
+	ldblib.c ldebug.c ldo.c ldump.c lfunc.c lgc.c linit.c \
+	liolib.c llex.c lmathlib.c lmem.c loadlib.c lobject.c \
+	lopcodes.c loslib.c lparser.c lstate.c lstring.c lstrlib.c \
+	ltable.c ltablib.c ltests.c ltm.c lundump.c lutf8lib.c lvm.c \
+	lzio.c \
+	lua_be.c lua_bg.c lua_img.c lua_input.c lua_io.c lua_video.c
+
+OBJS = $(SRCS:.c=.o)
 
 ARM_OUT_OBJS = $(addprefix build_arm/, $(OBJS))
 X64_OUT_OBJS = $(addprefix build_x86_64/, $(OBJS))
