@@ -16,6 +16,16 @@
 
 #define LUA_USE_CTYPE   1
 
+#include <eb_conio.h>
+
+static size_t __lua_writestring(const char *s, size_t l) {
+  int ll = l;
+  while (ll--)
+    eb_putch(*s++);
+  return l;
+}
+#define lua_writestring(s, l) __lua_writestring(s, l)
+#define lua_writestringerror(f, m) printf((f), m)
 
 #define l_lockfile(f)           ((void)0)
 #define l_unlockfile(f)         ((void)0)

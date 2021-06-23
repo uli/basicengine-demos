@@ -7,7 +7,7 @@ BE_SYSDIR = ../../../../enginebasic/init_dir/sys
 ARM_CROSS_COMPILE = ~/x-tools/arm-unknown-eabihf/bin/arm-unknown-eabihf-
 X64_CROSS_COMPILE = 
 
-CFLAGS = -O3 -Wall -DENGINEBASIC -I$(BE_SYSDIR)/include -nostdlib -ffreestanding -DPIXEL_TYPE=uint32_t -DIPIXEL_TYPE=uint32_t -U __UINT32_TYPE__ -U__INT32_TYPE__ -D__UINT32_TYPE__="unsigned int" -D__INT32_TYPE__=int -D_GNU_SOURCE
+CFLAGS = -O3 -Wall -Wno-unused-function -DENGINEBASIC -I$(BE_SYSDIR)/include -nostdlib -ffreestanding -DPIXEL_TYPE=uint32_t -DIPIXEL_TYPE=uint32_t -U __UINT32_TYPE__ -U__INT32_TYPE__ -D__UINT32_TYPE__="unsigned int" -D__INT32_TYPE__=int -D_GNU_SOURCE -D__DYNAMIC_REENT__
 ARM_CFLAGS = $(CFLAGS) -mfpu=neon -mfloat-abi=hard -mcpu=cortex-a7
 X64_CFLAGS = $(CFLAGS)
 
@@ -17,7 +17,8 @@ SRCS = lapi.c lauxlib.c lbaselib.c lcode.c lcorolib.c lctype.c \
 	lopcodes.c loslib.c lparser.c lstate.c lstring.c lstrlib.c \
 	ltable.c ltablib.c ltests.c ltm.c lundump.c lutf8lib.c lvm.c \
 	lzio.c \
-	lua_be.c lua_bg.c lua_img.c lua_input.c lua_io.c lua_video.c
+	lua_be.c lua_bg.c lua_img.c lua_input.c lua_io.c lua_video.c \
+	sys.c
 
 OBJS = $(SRCS:.c=.o)
 
@@ -47,6 +48,8 @@ build_x86_64/%.o: %.cpp
 build_x86_64/%.o: %.S
 	@mkdir -p $(@D)
 	$(X64_CROSS_COMPILE)gcc $(X64_CFLAGS) -o $@ -c $<
+
+all: lua_arm.o lua_x86_64.o
 
 lua_arm.o: $(ARM_OUT_OBJS)
 	$(ARM_CROSS_COMPILE)ld -r -o lua_arm.o $(ARM_OUT_OBJS)
