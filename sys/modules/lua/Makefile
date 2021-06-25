@@ -7,7 +7,7 @@ BE_SYSDIR = ../../../../enginebasic/init_dir/sys
 ARM_CROSS_COMPILE = ~/x-tools/arm-unknown-eabihf/bin/arm-unknown-eabihf-
 X64_CROSS_COMPILE = 
 
-CFLAGS = -O3 -Wall -Wno-unused-function -DENGINEBASIC -I$(BE_SYSDIR)/include -nostdlib -ffreestanding -DPIXEL_TYPE=uint32_t -DIPIXEL_TYPE=uint32_t -U __UINT32_TYPE__ -U__INT32_TYPE__ -D__UINT32_TYPE__="unsigned int" -D__INT32_TYPE__=int -D_GNU_SOURCE -D__DYNAMIC_REENT__
+CFLAGS = -O3 -fpic -Wall -Wno-unused-function -DENGINEBASIC -I$(BE_SYSDIR)/include -nostdlib -ffreestanding -DPIXEL_TYPE=uint32_t -DIPIXEL_TYPE=uint32_t -U __UINT32_TYPE__ -U__INT32_TYPE__ -D__UINT32_TYPE__="unsigned int" -D__INT32_TYPE__=int -D_GNU_SOURCE -D__DYNAMIC_REENT__
 ARM_CFLAGS = $(CFLAGS) -mfpu=neon -mfloat-abi=hard -mcpu=cortex-a7
 X64_CFLAGS = $(CFLAGS)
 
