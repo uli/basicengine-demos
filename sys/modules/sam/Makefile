@@ -7,8 +7,8 @@ BE_SYSDIR = ../../../../enginebasic/init_dir/sys
 ARM_CROSS_COMPILE = ~/x-tools/arm-unknown-eabihf/bin/arm-unknown-eabihf-
 X64_CROSS_COMPILE = 
 
-CFLAGS = -O3 -Wall -I. -I$(BE_SYSDIR)/include -nostdlib -ffreestanding  -D_GNU_SOURCE -D__DYNAMIC_REENT__ -DPIXEL_TYPE=uint32_t -DIPIXEL_TYPE=uint32_t
-ARM_CFLAGS = -mfpu=neon -mfloat-abi=hard -mcpu=cortex-a7 -U __UINT32_TYPE__ -U__INT32_TYPE__ -D__UINT32_TYPE__="unsigned int" -D__INT32_TYPE__=int
+CFLAGS = -O3 -Wall -I. -I$(BE_SYSDIR)/include -nostdlib -ffreestanding  -D_GNU_SOURCE -DPIXEL_TYPE=uint32_t -DIPIXEL_TYPE=uint32_t
+ARM_CFLAGS = -mfpu=neon -mfloat-abi=hard -mcpu=cortex-a7
 X64_CFLAGS = 
 
 OBJS_ARM = debug_arm.o ESP8266SAM_arm.o reciter_arm.o render_arm.o sam_core_arm.o module_arm.o
