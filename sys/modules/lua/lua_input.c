@@ -3,6 +3,7 @@
 
 #include "lua_defs.h"
 #include <eb_input.h>
+#include <stdint.h>
 
 static int l_inkey(lua_State *l) {
   lua_pushret(l, eb_inkey());

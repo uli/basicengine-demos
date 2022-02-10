@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2021 Ulrich Hecht
 
+#include <stdint.h>
+
 #include "lua_defs.h"
 #include <eb_basic.h>
 #include <eb_conio.h>

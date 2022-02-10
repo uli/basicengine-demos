@@ -3,6 +3,7 @@
 
 #include "lua_defs.h"
 #include <eb_img.h>
+#include <stdint.h>
 
 static int l_load_image(lua_State *l) {
   const char *file = luaL_checkstring(l, 1);
