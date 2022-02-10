@@ -4,7 +4,6 @@
 #include "ESP8266SAM.h"
 
 #include <eb_basic.h>
-#include <eb_native.h>
 #include <eb_sound.h>
 #include <eb_sys.h>
 #include <error.h>
@@ -51,15 +50,12 @@ extern "C" void sam_speak(const char *s)
     end_tick = eb_utick() + bp * 100000 / 2205;
 }
 
-EXPORT(sam_speak)
-EXPORT(sam_done)
-
 void say(const eb_param_t *params)
 {
     sam_speak(params[0].str);
 }
 
-double samdone(const eb_param_t *params)
+static double samdone(const eb_param_t *params)
 {
     return sam_done();
 }

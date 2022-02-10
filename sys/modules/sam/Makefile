@@ -3,24 +3,29 @@
 # Engine BASIC Makefiles (<source directory>/init_dir/sys)
 BE_SYSDIR = ../../../../enginebasic/init_dir/sys
 
-# prefixes of the toolchains for the different CPU architectures
-ARM_CROSS_COMPILE = ~/x-tools/arm-unknown-eabihf/bin/arm-unknown-eabihf-
-X64_CROSS_COMPILE = 
+# point this to the location of the buildroot toolchain bin directory
+TOOLCHAIN_BIN_ARM = ../../../../buildroot/output_opi/host/bin
+TOOLCHAIN_BIN_X64 = ../../../../buildroot/output_pc/host/bin
 
-CFLAGS = -O3 -Wall -I. -I$(BE_SYSDIR)/include -nostdlib -ffreestanding  -D_GNU_SOURCE -DPIXEL_TYPE=uint32_t -DIPIXEL_TYPE=uint32_t
-ARM_CFLAGS = -mfpu=neon -mfloat-abi=hard -mcpu=cortex-a7
+# prefixes of the toolchains for the different CPU architectures
+ARM_CROSS_COMPILE = $(TOOLCHAIN_BIN_ARM)/arm-buildroot-linux-uclibcgnueabihf-
+X64_CROSS_COMPILE = $(TOOLCHAIN_BIN_X64)/x86_64-buildroot-linux-uclibc-
+
+# link with -nostdlib to make modules compatible with both glibc and uclibc builds
+CFLAGS = -O3 -fPIC -Wall -I. -I$(BE_SYSDIR)/include -nostdlib -DPIXEL_TYPE=uint32_t -DIPIXEL_TYPE=uint32_t
+ARM_CFLAGS = 
 X64_CFLAGS = 
 
 OBJS_ARM = debug_arm.o ESP8266SAM_arm.o reciter_arm.o render_arm.o sam_core_arm.o module_arm.o
 OBJS_X64 = debug_x86_64.o ESP8266SAM_x86_64.o reciter_x86_64.o render_x86_64.o sam_core_x86_64.o module_x86_64.o
 
-all: sam_arm.o sam_x86_64.o
+all: sam_arm.so sam_x86_64.so
 
-sam_arm.o: $(OBJS_ARM)
-	$(ARM_CROSS_COMPILE)ld -o $@ -r $(OBJS_ARM)
+sam_arm.so: $(OBJS_ARM)
+	$(ARM_CROSS_COMPILE)g++ $(CFLAGS) $(ARM_CFLAGS) -o $@ -shared $(OBJS_ARM)
 
-sam_x86_64.o: $(OBJS_X64)
-	$(X64_CROSS_COMPILE)ld -o $@ -r $(OBJS_X64)
+sam_x86_64.so: $(OBJS_X64)
+	$(X64_CROSS_COMPILE)g++ $(CFLAGS) $(X64_CFLAGS) -o $@ -shared $(OBJS_X64)
 
 %_arm.o: %.c
 	$(ARM_CROSS_COMPILE)gcc $(CFLAGS) $(ARM_CFLAGS) -c -o $@ $<
@@ -32,5 +37,5 @@ sam_x86_64.o: $(OBJS_X64)
 	$(X64_CROSS_COMPILE)g++ $(CFLAGS) $(X64_CFLAGS) -c -o $@ $<
 
 clean:
-	rm -f *.o
+	rm -f *.o *.so
 

@@ -1,23 +1,23 @@
 be_sysdir = ../../../../enginebasic/init_dir/sys
-arm_cross_compile = ~/x-tools/arm-unknown-eabihf/bin/arm-unknown-eabihf-
-x64_cross_compile = 
+arm_cross_compile = ../../../../buildroot/output_opi/host/bin/arm-buildroot-linux-uclibcgnueabihf-
+x64_cross_compile = ../../../../buildroot/output_pc/host/bin/x86_64-buildroot-linux-uclibc-
 
-common_flags = -O3 -Wall -I. -I${be_sysdir}/include -nostdlib -ffreestanding  -D_GNU_SOURCE -DPIXEL_TYPE=uint32_t -DIPIXEL_TYPE=uint32_t
-arm_cflags = $common_flags -mfpu=neon -mfloat-abi=hard -mcpu=cortex-a7
+common_flags = -O3 -fPIC -Wall -I. -I${be_sysdir}/include -DPIXEL_TYPE=uint32_t -DIPIXEL_TYPE=uint32_t
+arm_cflags = $common_flags
 x64_cflags = $common_flags
 
 rule link
-  command = ${cross_compile}ld -o $out -r $in
+  command = ${cross_compile}g++ -nostdlib -shared -o $out $in
 
 rule cxx
   command = ${cross_compile}g++ $cflags -c -o $out $in
 
-build sam_arm.o: link debug_arm.o ESP8266SAM_arm.o reciter_arm.o render_arm.o sam_core_arm.o module_arm.o
+build sam_arm.so: link debug_arm.o ESP8266SAM_arm.o reciter_arm.o render_arm.o sam_core_arm.o module_arm.o
   cross_compile = $arm_cross_compile
-build sam_x86_64.o: link debug_x86_64.o ESP8266SAM_x86_64.o reciter_x86_64.o render_x86_64.o sam_core_x86_64.o module_x86_64.o
+build sam_x86_64.so: link debug_x86_64.o ESP8266SAM_x86_64.o reciter_x86_64.o render_x86_64.o sam_core_x86_64.o module_x86_64.o
   cross_compile = $x64_cross_compile
 
-default sam_arm.o sam_x86_64.o
+default sam_arm.so sam_x86_64.so
 
 build debug_arm.o: cxx debug.cpp
   cflags = $arm_cflags
