@@ -3,21 +3,19 @@
 # Engine BASIC Makefiles (<source directory>/init_dir/sys)
 BE_SYSDIR = ../../../../enginebasic/init_dir/sys
 
-# prefixes of the toolchains for the different CPU architectures
-ARM_CROSS_COMPILE = ~/x-tools/arm-unknown-eabihf/bin/arm-unknown-eabihf-
-X64_CROSS_COMPILE = 
+# point this to the location of the buildroot toolchain bin directory
+TOOLCHAIN_BIN_ARM = ../../../../buildroot/output_opi/host/bin
+TOOLCHAIN_BIN_X64 = ../../../../buildroot/output_pc/host/bin
 
-CFLAGS = -O3 -fpic -Wall -Wno-unused-function -DENGINEBASIC -I$(BE_SYSDIR)/include -nostdlib -ffreestanding -DPIXEL_TYPE=uint32_t -DIPIXEL_TYPE=uint32_t -D_GNU_SOURCE
-ARM_CFLAGS = $(CFLAGS) -mfpu=neon -mfloat-abi=hard -mcpu=cortex-a7
+# prefixes of the toolchains for the different CPU architectures
+ARM_CROSS_COMPILE = $(TOOLCHAIN_BIN_ARM)/arm-buildroot-linux-uclibcgnueabihf-
+X64_CROSS_COMPILE = $(TOOLCHAIN_BIN_X64)/x86_64-buildroot-linux-uclibc-
+
+CFLAGS = -O3 -fPIC -Wall -Wno-unused-function -DENGINEBASIC -I$(BE_SYSDIR)/include -DPIXEL_TYPE=uint32_t -DIPIXEL_TYPE=uint32_t -D_GNU_SOURCE
+ARM_CFLAGS = $(CFLAGS)
 X64_CFLAGS = $(CFLAGS)
 
-SRCS = lapi.c lauxlib.c lbaselib.c lcode.c lcorolib.c lctype.c \
-	ldblib.c ldebug.c ldo.c ldump.c lfunc.c lgc.c linit.c \
-	liolib.c llex.c lmathlib.c lmem.c loadlib.c lobject.c \
-	lopcodes.c loslib.c lparser.c lstate.c lstring.c lstrlib.c \
-	ltable.c ltablib.c ltests.c ltm.c lundump.c lutf8lib.c lvm.c \
-	lzio.c \
-	lua_be.c lua_bg.c lua_img.c lua_input.c lua_io.c lua_video.c \
+SRCS =	lua_be.c lua_bg.c lua_img.c lua_input.c lua_io.c lua_video.c \
 	sys.c
 
 OBJS = $(SRCS:.c=.o)
@@ -49,13 +47,13 @@ build_x86_64/%.o: %.S
 	@mkdir -p $(@D)
 	$(X64_CROSS_COMPILE)gcc $(X64_CFLAGS) -o $@ -c $<
 
-all: lua_arm.o lua_x86_64.o
+all: lua_arm.so lua_x86_64.so
 
-lua_arm.o: $(ARM_OUT_OBJS)
-	$(ARM_CROSS_COMPILE)ld -r -o lua_arm.o $(ARM_OUT_OBJS)
+lua_arm.so: $(ARM_OUT_OBJS)
+	$(ARM_CROSS_COMPILE)g++ -nostdlib -shared -o lua_arm.so $(ARM_OUT_OBJS) -llua
 
-lua_x86_64.o: $(X64_OUT_OBJS)
-	$(X64_CROSS_COMPILE)ld -r -o lua_x86_64.o $(X64_OUT_OBJS)
+lua_x86_64.so: $(X64_OUT_OBJS)
+	$(X64_CROSS_COMPILE)g++ -nostdlib -shared -o lua_x86_64.so $(X64_OUT_OBJS) -llua
 
 clean:
-	rm -fr build_arm build_x86_64 lua_arm.o lua_x86_64.o
+	rm -fr build_arm build_x86_64 lua_arm.so lua_x86_64.so
