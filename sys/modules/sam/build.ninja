@@ -1,10 +1,12 @@
 be_sysdir = ../../../../enginebasic/init_dir/sys
 arm_cross_compile = ~/x-tools/arm-unknown-eabihf/bin/arm-unknown-eabihf-
 x64_cross_compile = 
+i386_cross_compile = i686-linux-gnu-
 
 common_flags = -O3 -Wall -I. -I${be_sysdir}/include -nostdlib -ffreestanding  -D_GNU_SOURCE -DPIXEL_TYPE=uint32_t -DIPIXEL_TYPE=uint32_t
 arm_cflags = $common_flags -mfpu=neon -mfloat-abi=hard -mcpu=cortex-a7
 x64_cflags = $common_flags
+i386_cflags = $common_flags -fno-pic -fno-exceptions -fno-asynchronous-unwind-tables -m32
 
 rule link
   command = ${cross_compile}ld -o $out -r $in
@@ -16,8 +18,10 @@ build sam_arm.o: link debug_arm.o ESP8266SAM_arm.o reciter_arm.o render_arm.o sa
   cross_compile = $arm_cross_compile
 build sam_x86_64.o: link debug_x86_64.o ESP8266SAM_x86_64.o reciter_x86_64.o render_x86_64.o sam_core_x86_64.o module_x86_64.o
   cross_compile = $x64_cross_compile
+build sam_i386.o: link debug_i386.o ESP8266SAM_i386.o reciter_i386.o render_i386.o sam_core_i386.o module_i386.o
+  cross_compile = $i386_cross_compile
 
-default sam_arm.o sam_x86_64.o
+default sam_arm.o sam_x86_64.o sam_i386.o
 
 build debug_arm.o: cxx debug.cpp
   cflags = $arm_cflags
@@ -66,3 +70,27 @@ build render_x86_64.o: cxx render.cpp
 build sam_core_x86_64.o: cxx sam_core.cpp
   cflags = $x64_cflags
   cross_compile = $x64_cross_compile
+
+build debug_i386.o: cxx debug.cpp
+  cflags = $i386_cflags
+  cross_compile = $i386_cross_compile
+
+build ESP8266SAM_i386.o: cxx ESP8266SAM.cpp
+  cflags = $i386_cflags
+  cross_compile = $i386_cross_compile
+
+build module_i386.o: cxx module.cpp
+  cflags = $i386_cflags
+  cross_compile = $i386_cross_compile
+
+build reciter_i386.o: cxx reciter.cpp
+  cflags = $i386_cflags
+  cross_compile = $i386_cross_compile
+
+build render_i386.o: cxx render.cpp
+  cflags = $i386_cflags
+  cross_compile = $i386_cross_compile
+
+build sam_core_i386.o: cxx sam_core.cpp
+  cflags = $i386_cflags
+  cross_compile = $i386_cross_compile
