@@ -5,7 +5,7 @@ DIM sc$(22)
 
 ' initial statements
 &menu:
-COLOR $ac, $d9
+COLOR RGB(249,146,0), RGB(0,105,0)
 CLS
 LOCATE CSIZE(0)/2-7, 10
 PRINT "---SOKOBAN---"
@@ -167,7 +167,7 @@ FOR i=0 TO LEN(tmap_from$)
   PLOT 0 MAP tmap_from$[i] TO tmap_to(i)
 NEXT
 
-SPRITE 0 PATTERN spr_x,spr_y SIZE 16,16 FRAME 0,0 KEY 217
+SPRITE 0 PATTERN spr_x,spr_y SIZE 16,16 FRAME 0,0 KEY POINT(spr_x, spr_y)
 SPRITE 0 ON
 SPRITE 1 PATTERN spr_x,spr_y-32 SIZE 16,16 FRAME 4,0
 MOVE SPRITE 1 TO PSIZE(0),0
@@ -185,7 +185,7 @@ NEXT g
 IF found = 0 AND star = 0 THEN
     BG 0 OFF
     WINDOW CSIZE(0)/2-10,CSIZE(1)/2-3,20,1
-    PRINT "\fac\bd9  LEVEL COMPLETE!  "
+    PRINT "\f0092f9\b006900  LEVEL COMPLETE!  "
     WINDOW OFF
     WHILE INKEY$<>"" OR PAD(0):WEND
     WHILE INKEY$="" AND PAD(0)=0:WEND 'SLEEP
