@@ -6,10 +6,12 @@ BE_SYSDIR = ../../../../enginebasic/init_dir/sys
 # prefixes of the toolchains for the different CPU architectures
 ARM_CROSS_COMPILE = ~/x-tools/arm-unknown-eabihf/bin/arm-unknown-eabihf-
 X64_CROSS_COMPILE = 
+I386_CROSS_COMPILE = i686-linux-gnu-
 
 CFLAGS = -O3 -fpic -Wall -Wno-unused-function -DENGINEBASIC -I$(BE_SYSDIR)/include -nostdlib -ffreestanding -DPIXEL_TYPE=uint32_t -DIPIXEL_TYPE=uint32_t -D_GNU_SOURCE
 ARM_CFLAGS = $(CFLAGS) -mfpu=neon -mfloat-abi=hard -mcpu=cortex-a7
 X64_CFLAGS = $(CFLAGS)
+I386_CFLAGS = $(CFLAGS) -fno-pic -fno-exceptions -fno-asynchronous-unwind-tables -m32
 
 SRCS = lapi.c lauxlib.c lbaselib.c lcode.c lcorolib.c lctype.c \
 	ldblib.c ldebug.c ldo.c ldump.c lfunc.c lgc.c linit.c \
@@ -24,6 +26,7 @@ OBJS = $(SRCS:.c=.o)
 
 ARM_OUT_OBJS = $(addprefix build_arm/, $(OBJS))
 X64_OUT_OBJS = $(addprefix build_x86_64/, $(OBJS))
+I386_OUT_OBJS = $(addprefix build_i386/, $(OBJS))
 
 build_arm/%.o: %.c
 	@mkdir -p $(@D)
@@ -49,7 +52,19 @@ build_x86_64/%.o: %.S
 	@mkdir -p $(@D)
 	$(X64_CROSS_COMPILE)gcc $(X64_CFLAGS) -o $@ -c $<
 
-all: lua_arm.o lua_x86_64.o
+build_i386/%.o: %.c
+	@mkdir -p $(@D)
+	$(I386_CROSS_COMPILE)gcc $(I386_CFLAGS) -o $@ -c $<
+
+build_i386/%.o: %.cpp
+	@mkdir -p $(@D)
+	$(I386_CROSS_COMPILE)g++ $(I386_CFLAGS) -o $@ -c $<
+
+build_i386/%.o: %.S
+	@mkdir -p $(@D)
+	$(I386_CROSS_COMPILE)gcc $(I386_CFLAGS) -o $@ -c $<
+
+all: lua_arm.o lua_x86_64.o lua_i386.o
 
 lua_arm.o: $(ARM_OUT_OBJS)
 	$(ARM_CROSS_COMPILE)ld -r -o lua_arm.o $(ARM_OUT_OBJS)
@@ -57,5 +72,8 @@ lua_arm.o: $(ARM_OUT_OBJS)
 lua_x86_64.o: $(X64_OUT_OBJS)
 	$(X64_CROSS_COMPILE)ld -r -o lua_x86_64.o $(X64_OUT_OBJS)
 
+lua_i386.o: $(I386_OUT_OBJS)
+	$(I386_CROSS_COMPILE)ld -r -o lua_i386.o $(I386_OUT_OBJS)
+
 clean:
-	rm -fr build_arm build_x86_64 lua_arm.o lua_x86_64.o
+	rm -fr build_arm build_x86_64 build_i386 lua_arm.o lua_x86_64.o lua_i386.o
